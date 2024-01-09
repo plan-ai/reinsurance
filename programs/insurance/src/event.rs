@@ -12,7 +12,7 @@ pub struct InsuranceCreated {
     pub insurance_id: String,
     pub coverage: u64,
     pub premium: u64,
-    pub minimum_commission: u64,
+    pub minimum_commission: u32,
     pub deductible: u64,
     pub expiry: i64,
     pub metadata_link: String,
@@ -24,22 +24,23 @@ pub struct LPCreated {
 }
 
 #[event]
+pub struct LPAssetAdded {
+    pub lp: Pubkey,
+    pub asset_amount: u64,
+}
+
+#[event]
 pub struct ReInsuranceProposed {
     pub lp_owner: Pubkey,
-    pub proposed_commision: u8,
-    pub proposed_undercollaterization: u8,
+    pub proposed_commision: u64,
+    pub proposed_undercollaterization: u64,
     pub insurance: Pubkey,
+    pub proposal_docs: String,
 }
 
 #[event]
 pub struct ReInsuranceProposalAccepted {
     pub reinsurance: Pubkey,
-}
-
-#[event]
-pub struct ReInsuranceSecuritized {
-    pub reinsurance: Pubkey,
-    pub security_vault: Pubkey,
 }
 
 #[event]
@@ -51,6 +52,16 @@ pub struct ReInsuranceCalledOff {
 pub struct PremiumPayed {
     pub reinsurance: Pubkey,
     pub prepayment_time: i64,
+}
+
+#[event]
+pub struct ReInsuranceClaimed {
+    pub reinsurance: Pubkey,
+}
+
+#[event]
+pub struct LPTokenised {
+    pub lp: Pubkey,
 }
 
 #[event]

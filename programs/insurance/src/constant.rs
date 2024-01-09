@@ -12,3 +12,5 @@ pub const WEEK: i64 = 7 * DAY;
 pub const TWO_WEEKS: i64 = 2 * WEEK;
 #[constant]
 pub const MONTH: i64 = 30 * DAY;
+#[constant]
+pub const DEFAULT_MINT_DECIMALS: u8 = 6;

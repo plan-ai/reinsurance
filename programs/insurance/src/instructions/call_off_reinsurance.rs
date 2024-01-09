@@ -2,7 +2,7 @@ use crate::{
     constant::TWO_WEEKS,
     error::InsuranceEnumError,
     event::ReInsuranceCalledOff,
-    state::{Insurance, PremiumVault, ReInsuranceProposal, SecurtyVault, LP},
+    state::{Insurance, PremiumVault, ReInsuranceProposal, LP},
     utils::remove_from_vector,
 };
 use anchor_lang::prelude::*;
@@ -48,22 +48,6 @@ pub struct CallOffReinsurance<'info> {
     #[account(
         mut,
         seeds = [
-            b"security",
-            insurance.key().as_ref(),
-            proposal.key().as_ref()
-        ],
-        bump=security_vault.bump
-    )]
-    pub security_vault: Account<'info, SecurtyVault>,
-    #[account(
-        mut,
-        associated_token::mint = usdc_mint,
-        associated_token::authority = security_vault
-    )]
-    pub security_vault_token_account: Account<'info, TokenAccount>,
-    #[account(
-        mut,
-        seeds = [
             b"premium",
             insurance.key().as_ref(),
             proposal.key().as_ref()
@@ -91,8 +75,6 @@ pub fn handler(ctx: Context<CallOffReinsurance>) -> Result<()> {
     let current_time = Clock::get()?.unix_timestamp;
     let token_program = &ctx.accounts.token_program;
     let lp_usdc_account = &mut ctx.accounts.lp_usdc_account;
-    let security_vault_token_account = &mut ctx.accounts.security_vault_token_account;
-    let security_vault = &mut ctx.accounts.security_vault;
     let premium_vault = &mut ctx.accounts.premium_vault;
     let premium_vault_token_account = &mut ctx.accounts.premium_vault_token_account;
 
@@ -104,35 +86,20 @@ pub fn handler(ctx: Context<CallOffReinsurance>) -> Result<()> {
 
     insurance.reinsured = false;
     proposal.proposal_accepted = false;
-    lp.total_securitized -= security_vault_token_account.amount;
+    lp.total_securitized -= insurance.coverage;
 
     remove_from_vector(insurance.key(), &mut lp.insures).unwrap();
-
-    let proposal_binding = proposal.key();
-    let insurance_binding = insurance.key();
-    let security_vault_signer_seeds: &[&[&[u8]]] = &[&[
-        b"security",
-        insurance_binding.as_ref(),
-        proposal_binding.as_ref(),
-        &[security_vault.bump],
-    ]];
-
-    transfer(
-        CpiContext::new_with_signer(
-            token_program.to_account_info(),
-            Transfer {
-                from: security_vault_token_account.to_account_info(),
-                to: lp_usdc_account.to_account_info(),
-                authority: security_vault.to_account_info(),
-            },
-            security_vault_signer_seeds,
-        ),
-        security_vault_token_account.amount,
-    )?;
+    remove_from_vector(
+        proposal.proposed_undercollaterization,
+        &mut lp.undercollaterization_promised,
+    )
+    .unwrap();
 
     if let (Some(premium_vault), Some(premium_vault_token_account)) =
         (premium_vault, premium_vault_token_account)
     {
+        let proposal_binding = proposal.key();
+        let insurance_binding = insurance.key();
         let premium_vault_signer_seeds: &[&[&[u8]]] = &[&[
             b"premium",
             insurance_binding.as_ref(),

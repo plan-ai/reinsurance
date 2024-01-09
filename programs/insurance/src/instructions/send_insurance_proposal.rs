@@ -40,8 +40,9 @@ pub struct SendInsuranceProposal<'info> {
 
 pub fn handler(
     ctx: Context<SendInsuranceProposal>,
-    proposed_commision: u8,
-    proposed_undercollaterization: u8,
+    proposed_commision: u64,
+    proposed_undercollaterization: u64,
+    proposal_docs: String,
 ) -> Result<()> {
     let proposal = &mut ctx.accounts.proposal;
     let lp_creator = &ctx.accounts.lp_creator;
@@ -62,6 +63,7 @@ pub fn handler(
     proposal.proposed_commision = proposed_commision;
     proposal.proposed_undercollaterization = proposed_undercollaterization;
     proposal.insurance = insurance.key();
+    proposal.proposal_docs = proposal_docs.clone();
     proposal.proposal_accepted = false;
 
     emit!(ReInsuranceProposed {
@@ -69,6 +71,7 @@ pub fn handler(
         proposed_commision: proposed_commision,
         proposed_undercollaterization: proposed_undercollaterization,
         insurance: insurance.key(),
+        proposal_docs: proposal_docs
     });
 
     Ok(())

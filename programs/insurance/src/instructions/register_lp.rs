@@ -25,6 +25,11 @@ pub fn handler(ctx: Context<RegisterLP>) -> Result<()> {
     lp.bump = ctx.bumps.lp;
     lp.lp_creator = lp_creator.key();
     lp.insures = vec![];
+    lp.undercollaterization_promised = vec![];
+    lp.total_securitized = 0;
+    lp.total_assets = 0;
+    lp.max_undercollaterization_promised = 0;
+    lp.tokenised = false;
 
     emit!(LPCreated {
         lp_creator: lp_creator.key()

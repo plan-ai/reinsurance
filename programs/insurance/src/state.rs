@@ -18,7 +18,7 @@ pub struct Insurance {
     pub insurer: Pubkey,
     pub coverage: u64,
     pub premium: u64,
-    pub minimum_commission: u64,
+    pub minimum_commission: u32,
     pub deductible: u64,
     pub expiry: i64,
     #[max_len(100)]
@@ -35,7 +35,11 @@ pub struct LP {
     #[max_len(20)]
     pub insures: Vec<Pubkey>,
     pub total_securitized: u64,
-    pub total_tokenised: u64,
+    pub total_assets: u64,
+    pub max_undercollaterization_promised: u64,
+    #[max_len(20)]
+    pub undercollaterization_promised: Vec<u64>,
+    pub tokenised: bool,
 }
 
 #[account]
@@ -43,9 +47,11 @@ pub struct LP {
 pub struct ReInsuranceProposal {
     pub bump: u8,
     pub lp_owner: Pubkey,
-    pub proposed_commision: u8,
-    pub proposed_undercollaterization: u8,
+    pub proposed_commision: u64,
+    pub proposed_undercollaterization: u64,
     pub insurance: Pubkey,
+    #[max_len(100)]
+    pub proposal_docs: String,
     pub proposal_accepted: bool,
 }
 
@@ -59,7 +65,10 @@ pub struct PremiumVault {
 
 #[account]
 #[derive(InitSpace)]
-pub struct SecurtyVault {
+pub struct StrategyVoting {
     pub bump: u8,
-    pub reinsurance: Pubkey,
+    #[max_len(30)]
+    pub strategies: Vec<Pubkey>,
+    #[max_len(30)]
+    pub votes: Vec<u64>,
 }

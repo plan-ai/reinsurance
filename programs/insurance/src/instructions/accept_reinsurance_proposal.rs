@@ -1,7 +1,7 @@
 use crate::{
     error::InsuranceEnumError,
     event::ReInsuranceProposalAccepted,
-    state::{Insurance, ReInsuranceProposal},
+    state::{Insurance, ReInsuranceProposal, LP},
 };
 use anchor_lang::prelude::*;
 
@@ -19,7 +19,15 @@ pub struct AcceptReinsuranceProposal<'info> {
     #[account(
         mut,
         seeds = [
-            proposal.lp_owner.key().as_ref(),
+            proposal.lp_owner.as_ref()
+        ],
+        bump=lp.bump
+    )]
+    pub lp: Account<'info, LP>,
+    #[account(
+        mut,
+        seeds = [
+            proposal.lp_owner.as_ref(),
             insurance.key().as_ref()
         ],
         bump=proposal.bump
@@ -31,7 +39,19 @@ pub struct AcceptReinsuranceProposal<'info> {
 pub fn handler(ctx: Context<AcceptReinsuranceProposal>) -> Result<()> {
     let proposal = &mut ctx.accounts.proposal;
     let insurance = &ctx.accounts.insurance;
+    let lp = &mut ctx.accounts.lp;
 
+    lp.total_securitized += insurance.coverage;
+    if proposal.proposed_undercollaterization > lp.max_undercollaterization_promised {
+        lp.max_undercollaterization_promised = proposal.proposed_undercollaterization;
+    }
+    lp.undercollaterization_promised
+        .push(proposal.proposed_undercollaterization);
+
+    require!(
+        lp.total_securitized * 1000 == lp.max_undercollaterization_promised * lp.total_assets,
+        InsuranceEnumError::CanNotFullFillUnderCollateralizationDemands
+    );
     require!(
         !insurance.reinsured,
         InsuranceEnumError::InsuranceReinsuredAlready
