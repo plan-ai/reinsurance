@@ -8,6 +8,7 @@ pub mod register_lp;
 pub mod release_security;
 pub mod send_insurance_proposal;
 pub mod tokenise_lp;
+pub mod propose_strategy;
 
 pub use accept_reinsurance_proposal::*;
 pub use add_security::*;
@@ -19,3 +20,4 @@ pub use register_lp::*;
 pub use release_security::*;
 pub use send_insurance_proposal::*;
 pub use tokenise_lp::*;
+pub use propose_strategy::*;

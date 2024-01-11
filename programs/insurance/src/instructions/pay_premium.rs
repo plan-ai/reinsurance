@@ -76,7 +76,6 @@ pub fn handler(ctx: Context<PayPremiun>, premium_multiplier: u64) -> Result<()> 
 
     premium_vault.bump = ctx.bumps.premium_vault;
     premium_vault.reinsurance = proposal.key();
-    premium_vault.strategy_program = None;
 
     let transfer_amount = premium_multiplier
         * (insurance.premium * ((1 - (proposal.proposed_commision / 100)) as u64));

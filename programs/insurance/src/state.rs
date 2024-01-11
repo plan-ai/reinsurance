@@ -60,15 +60,16 @@ pub struct ReInsuranceProposal {
 pub struct PremiumVault {
     pub bump: u8,
     pub reinsurance: Pubkey,
-    pub strategy_program: Option<Pubkey>,
 }
 
 #[account]
 #[derive(InitSpace)]
-pub struct StrategyVoting {
+pub struct StrategyAccount{
     pub bump: u8,
-    #[max_len(30)]
-    pub strategies: Vec<Pubkey>,
-    #[max_len(30)]
-    pub votes: Vec<u64>,
+    pub strategy_program: Pubkey,
+    pub max_spending_power: u64,
+    #[max_len(50)]
+    pub strategy_id:String,
+    pub premium_vault: Pubkey,
+    pub vote: u64
 }
