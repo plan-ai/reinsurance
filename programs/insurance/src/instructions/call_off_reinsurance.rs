@@ -80,7 +80,7 @@ pub fn handler(ctx: Context<CallOffReinsurance>) -> Result<()> {
 
     require!(
         current_time > insurance.premium_due.unwrap() + TWO_WEEKS
-            || insurance.expiry < current_time,
+            || insurance.expiry <= current_time,
         InsuranceEnumError::CanNotCallOffReinsurance
     );
 
@@ -119,7 +119,6 @@ pub fn handler(ctx: Context<CallOffReinsurance>) -> Result<()> {
             ),
             premium_vault_token_account.amount,
         )?;
-    } else {
     };
 
     emit!(ReInsuranceCalledOff {

@@ -64,12 +64,20 @@ pub struct PremiumVault {
 
 #[account]
 #[derive(InitSpace)]
-pub struct StrategyAccount{
+pub struct StrategyAccount {
     pub bump: u8,
     pub strategy_program: Pubkey,
     pub max_spending_power: u64,
     #[max_len(50)]
-    pub strategy_id:String,
+    pub strategy_id: String,
     pub premium_vault: Pubkey,
-    pub vote: u64
+    pub vote: u64,
+    pub voting_start: Option<i64>,
+    pub strategy_accepted: bool,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct StrategyVoteAccount {
+    pub bump: u8,
 }

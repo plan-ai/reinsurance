@@ -25,4 +25,20 @@ pub enum InsuranceEnumError {
     // 6005
     #[msg("LP can not fulfill under-collaterisation constraints")]
     CanNotFullFillUnderCollateralizationDemands,
+
+    // 6006
+    #[msg("Not enough voting power")]
+    InsufficientVotingPower,
+
+    // 6007
+    #[msg("Voting on strategy closed!")]
+    VotingOnStrategyClosed,
+
+    // 6008
+    #[msg("Not enought votes to accept")]
+    NotEnoughVotes,
+
+    // 6009
+    #[msg("Can not refund before voting closes")]
+    RefundDeclined,
 }

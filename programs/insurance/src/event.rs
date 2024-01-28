@@ -65,15 +65,28 @@ pub struct LPTokenised {
 }
 
 #[event]
-pub struct StrategyProposed{
+pub struct StrategyProposed {
     pub strategy: Pubkey,
     pub max_spending_power: u64,
     pub premium_vault: Pubkey,
-    pub strategy_id: String
+    pub strategy_id: String,
 }
 
 #[event]
-pub struct StrtegySelected {
-    pub reinsurance: Pubkey,
+pub struct StrategyVoted {
     pub strategy: Pubkey,
+    pub voter: Pubkey,
+    pub vote_amount: u64,
+}
+
+#[event]
+pub struct StrategyAccepted {
+    pub strategy: Pubkey,
+}
+
+#[event]
+pub struct StrategyVoteRefunded {
+    pub strategy: Pubkey,
+    pub refunded_to: Pubkey,
+    pub refund_amount: u64,
 }

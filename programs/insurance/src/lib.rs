@@ -6,6 +6,7 @@ pub mod error;
 pub mod event;
 pub mod instructions;
 pub mod state;
+pub mod strategy_program_interface;
 pub mod utils;
 
 declare_id!("8evVxMNMoHX2gdGVSLfHR4UwRUCdYC28erfpUAYaPiEn");
@@ -45,5 +46,13 @@ pub mod insurance {
             expiry,
             metadata_link,
         )
+    }
+
+    pub fn accept_reinsurance_proposal(ctx: Context<AcceptReinsuranceProposal>) -> Result<()> {
+        accept_reinsurance_proposal::handler(ctx)
+    }
+
+    pub fn add_security(ctx: Context<AddSecurity>, transfer_amount: u64) -> Result<()> {
+        add_security::handler(ctx, transfer_amount)
     }
 }

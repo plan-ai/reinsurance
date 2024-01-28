@@ -1,10 +1,9 @@
 use crate::{
     event::StrategyProposed,
     state::{PremiumVault, StrategyAccount},
+    strategy_program_interface::StrategyInterface,
 };
-use strategy::program::Strategy;
 use anchor_lang::prelude::*;
-
 
 #[derive(Accounts)]
 #[instruction(strategy_id:String)]
@@ -23,12 +22,16 @@ pub struct ProposeStrategy<'info> {
         ],
         bump
     )]
-    pub proposed_strategy: Account<'info,StrategyAccount>,
-    pub strategy_program: Program<'info,Strategy>,
+    pub proposed_strategy: Account<'info, StrategyAccount>,
+    pub strategy_program: Interface<'info, StrategyInterface>,
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx:Context<ProposeStrategy>,strategy_id:String,max_spending_power:u64) -> Result<()>{
+pub fn handler(
+    ctx: Context<ProposeStrategy>,
+    strategy_id: String,
+    max_spending_power: u64,
+) -> Result<()> {
     let strategy_program = &ctx.accounts.strategy_program;
     let premium_vault = &ctx.accounts.premium_vault;
     let proposed_strategy = &mut ctx.accounts.proposed_strategy;
@@ -39,8 +42,10 @@ pub fn handler(ctx:Context<ProposeStrategy>,strategy_id:String,max_spending_powe
     proposed_strategy.strategy_id = strategy_id.clone();
     proposed_strategy.premium_vault = premium_vault.key();
     proposed_strategy.vote = 0;
+    proposed_strategy.voting_start = None;
+    proposed_strategy.strategy_accepted = false;
 
-    emit!(StrategyProposed{
+    emit!(StrategyProposed {
         strategy: proposed_strategy.key(),
         max_spending_power: max_spending_power,
         premium_vault: premium_vault.key(),
@@ -48,5 +53,4 @@ pub fn handler(ctx:Context<ProposeStrategy>,strategy_id:String,max_spending_powe
     });
 
     Ok(())
-
 }
