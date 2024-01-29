@@ -90,3 +90,11 @@ pub struct StrategyVoteRefunded {
     pub refunded_to: Pubkey,
     pub refund_amount: u64,
 }
+
+#[event]
+pub struct ClaimRaised {
+    pub reinsurance: Pubkey,
+    pub claim: Pubkey,
+    pub claim_amount: u64,
+    pub claim_metadata_link: String,
+}

@@ -81,3 +81,15 @@ pub struct StrategyAccount {
 pub struct StrategyVoteAccount {
     pub bump: u8,
 }
+
+#[account]
+#[derive(InitSpace)]
+pub struct Claim {
+    pub bump: u8,
+    pub reinsurance: Pubkey,
+    #[max_len(50)]
+    pub claim_id: String,
+    pub claim_amount: u64,
+    #[max_len(100)]
+    pub claim_metadata_link: String,
+}

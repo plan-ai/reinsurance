@@ -41,4 +41,8 @@ pub enum InsuranceEnumError {
     // 6009
     #[msg("Can not refund before voting closes")]
     RefundDeclined,
+
+    // 6010
+    #[msg("Can not raise claim greater than coverage amount")]
+    ClaimTooHigh,
 }
