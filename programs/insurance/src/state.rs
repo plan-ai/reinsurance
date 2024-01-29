@@ -92,4 +92,16 @@ pub struct Claim {
     pub claim_amount: u64,
     #[max_len(100)]
     pub claim_metadata_link: String,
+    pub claim_voting_start: Option<i64>,
+    pub vote_for: u64,
+    pub vote_against: u64,
+    pub accepted: Option<bool>
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct ClaimVoteAccount {
+    pub bump: u8,
+    pub vote_amount: u64,
+    pub voted_for: bool,
 }

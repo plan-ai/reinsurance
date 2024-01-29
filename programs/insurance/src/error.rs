@@ -45,4 +45,8 @@ pub enum InsuranceEnumError {
     // 6010
     #[msg("Can not raise claim greater than coverage amount")]
     ClaimTooHigh,
+
+    // 6010
+    #[msg("Claim voting closes after 1 month")]
+    ClaimVotingClosed
 }

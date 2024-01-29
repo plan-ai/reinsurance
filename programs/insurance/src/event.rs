@@ -98,3 +98,10 @@ pub struct ClaimRaised {
     pub claim_amount: u64,
     pub claim_metadata_link: String,
 }
+
+#[event]
+pub struct ClaimVoted {
+    pub claim: Pubkey,
+    pub voter: Pubkey,
+    pub vote_amount: u64
+}

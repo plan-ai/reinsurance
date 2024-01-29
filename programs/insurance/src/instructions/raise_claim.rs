@@ -65,7 +65,11 @@ pub fn handler(
     claim.claim_id = claim_id;
     claim.claim_amount = claim_amount;
     claim.claim_metadata_link = claim_metadata_link.clone();
-
+    claim.claim_voting_start = None;
+    claim.vote_for = 0;
+    claim.vote_against = 0;
+    claim.accepted = None;
+    
     emit!(ClaimRaised {
         reinsurance: proposal.key(),
         claim: claim.key(),
