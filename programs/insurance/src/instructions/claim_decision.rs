@@ -1,8 +1,5 @@
 use crate::{
-    constant::MONTH,
-    error::InsuranceEnumError,
-    event::ClaimDecisionReleased,
-    state::Claim,
+    constant::MONTH, error::InsuranceEnumError, event::ClaimDecisionReleased, state::Claim,
 };
 use anchor_lang::prelude::*;
 
@@ -23,13 +20,13 @@ pub fn handler(ctx: Context<ClaimDecision>) -> Result<()> {
         InsuranceEnumError::DecisionNotYetReleased
     );
 
-    if claim.vote_for>claim.vote_against{
+    if claim.vote_for > claim.vote_against {
         claim.accepted = Some(true);
-    }else{
+    } else {
         claim.accepted = Some(false);
     };
 
-    emit!(ClaimDecisionReleased{
+    emit!(ClaimDecisionReleased {
         claim: claim.key(),
         decision: claim.accepted.unwrap()
     });

@@ -57,6 +57,7 @@ pub struct PremiumPayed {
 #[event]
 pub struct ReInsuranceClaimed {
     pub reinsurance: Pubkey,
+    pub claim_amount: u64,
 }
 
 #[event]
@@ -107,7 +108,18 @@ pub struct ClaimVoted {
 }
 
 #[event]
-pub struct ClaimDecisionReleased{
+pub struct ClaimDecisionReleased {
     pub claim: Pubkey,
-    pub decision: bool
+    pub decision: bool,
+}
+
+#[event]
+pub struct ClaimRewardReleased {
+    pub claim: Pubkey,
+    pub reward_amount: u64,
+}
+
+#[event]
+pub struct StrategyExecuted {
+    pub strategy: Pubkey,
 }

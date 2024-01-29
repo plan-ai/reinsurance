@@ -69,6 +69,7 @@ pub fn handler(
     claim.vote_for = 0;
     claim.vote_against = 0;
     claim.accepted = None;
+    claim.claimed = false;
 
     emit!(ClaimRaised {
         reinsurance: proposal.key(),

@@ -53,4 +53,16 @@ pub enum InsuranceEnumError {
     // 6012
     #[msg("Can not release decision before voting closes")]
     DecisionNotYetReleased,
+
+    // 6013
+    #[msg("Sadly your claim vote did not win!")]
+    ClaimVoteDidNotWin,
+
+    // 6014
+    #[msg("Incorrect Reward entered")]
+    IncorrectRewardAmount,
+
+    // 6015
+    #[msg("Strategy can not use fund higher than allocated")]
+    StrategyAllocationTooHigh,
 }
