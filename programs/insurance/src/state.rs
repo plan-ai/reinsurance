@@ -95,7 +95,7 @@ pub struct Claim {
     pub claim_voting_start: Option<i64>,
     pub vote_for: u64,
     pub vote_against: u64,
-    pub accepted: Option<bool>
+    pub accepted: Option<bool>,
 }
 
 #[account]

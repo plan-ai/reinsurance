@@ -1,8 +1,8 @@
 use crate::{
     constant::MONTH,
+    error::InsuranceEnumError,
     event::ClaimVoted,
-    error:: InsuranceEnumError,
-    state::{Claim,ClaimVoteAccount},
+    state::{Claim, ClaimVoteAccount},
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -43,7 +43,7 @@ pub struct VoteClaim<'info> {
         ],
         bump
     )]
-    pub claim_vote_account: Account<'info,ClaimVoteAccount>,
+    pub claim_vote_account: Account<'info, ClaimVoteAccount>,
     #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -61,11 +61,12 @@ pub fn handler(ctx: Context<VoteClaim>, vote_amount: u64, vote_direction: bool) 
     let current_time = Clock::get()?.unix_timestamp;
 
     match claim.claim_voting_start {
-        None => {
-            claim.claim_voting_start = Some(current_time)
-        },
+        None => claim.claim_voting_start = Some(current_time),
         Some(voting_start) => {
-            require!(current_time-voting_start<=MONTH,InsuranceEnumError::ClaimVotingClosed)
+            require!(
+                current_time - voting_start <= MONTH,
+                InsuranceEnumError::ClaimVotingClosed
+            )
         }
     };
 
@@ -75,7 +76,7 @@ pub fn handler(ctx: Context<VoteClaim>, vote_amount: u64, vote_direction: bool) 
 
     if vote_direction {
         claim.vote_for += vote_amount;
-    }else{
+    } else {
         claim.vote_against += vote_amount
     };
 
@@ -91,11 +92,11 @@ pub fn handler(ctx: Context<VoteClaim>, vote_amount: u64, vote_direction: bool) 
         vote_amount,
     )?;
 
-    emit!(ClaimVoted{
+    emit!(ClaimVoted {
         claim: claim.key(),
         voter: voter.key(),
         vote_amount: vote_amount
     });
-    
+
     Ok(())
 }

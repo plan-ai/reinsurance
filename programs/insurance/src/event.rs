@@ -103,5 +103,11 @@ pub struct ClaimRaised {
 pub struct ClaimVoted {
     pub claim: Pubkey,
     pub voter: Pubkey,
-    pub vote_amount: u64
+    pub vote_amount: u64,
+}
+
+#[event]
+pub struct ClaimDecisionReleased{
+    pub claim: Pubkey,
+    pub decision: bool
 }
