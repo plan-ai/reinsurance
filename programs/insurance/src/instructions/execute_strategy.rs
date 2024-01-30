@@ -13,6 +13,7 @@ use anchor_spl::{
 use strategy::cpi::accounts::ExecuteStrategyCPI;
 
 #[derive(Accounts)]
+#[instruction(stream_amount: u64)]
 pub struct ExecuteStrategy<'info> {
     pub executor: Signer<'info>,
     #[account(
@@ -42,7 +43,8 @@ pub struct ExecuteStrategy<'info> {
     #[account(
         mut,
         associated_token::mint = usdc_mint,
-        associated_token::authority = premium_vault
+        associated_token::authority = premium_vault,
+        constraint = premium_vault_token_account.amount >= stream_amount
     )]
     pub premium_vault_token_account: Account<'info, TokenAccount>,
     #[account(
@@ -60,8 +62,8 @@ pub struct ExecuteStrategy<'info> {
         constraint = strategy_program.key() == proposed_strategy.strategy_program
     )]
     pub strategy_program: Interface<'info, StrategyInterface>,
-    ///CHECK: program on which strategy is executed
-    pub executor_program: AccountInfo<'info>,
+    ///CHECK: account on which strategy money is deposited
+    pub executor_account: AccountInfo<'info>,
     #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -76,18 +78,44 @@ pub fn handler(ctx: Context<ExecuteStrategy>) -> Result<()> {
     let usdc_mint = &ctx.accounts.usdc_mint;
     let token_program = &ctx.accounts.token_program;
     let associated_token_program = &ctx.accounts.associated_token_program;
-    let executor_program = &ctx.accounts.executor_program;
+    let executor_account = &ctx.accounts.executor_account;
     let proposal = &ctx.accounts.proposal;
-    let proposed_strategy = &ctx.accounts.proposed_strategy;
+    let proposed_strategy = &mut ctx.accounts.proposed_strategy;
     let insurance = &ctx.accounts.insurance;
     let system_program = &ctx.accounts.system_program;
+
+    let current_time = Clock::get()?.unix_timestamp;
+    match proposed_strategy.last_stream_payment {
+        None => {
+            proposed_strategy.last_stream_payment = Some(current_time);
+        }
+        Some(last_stream_payment) => {
+            require!(
+                current_time - last_stream_payment >= proposed_strategy.stream_every,
+                InsuranceEnumError::StreamMaturationNotYetReached
+            );
+            proposed_strategy.last_stream_payment =
+                Some(last_stream_payment + proposed_strategy.stream_every);
+        }
+    };
+
+    require!(
+        proposed_strategy.number_of_streams > 0,
+        InsuranceEnumError::StrategyStreamsEnded
+    );
+    proposed_strategy.number_of_streams -= 1;
+
+    require!(
+        proposed_strategy.strategy_blocked == false,
+        InsuranceEnumError::StrategyBlocked
+    );
 
     let intital_balance = premium_vault_token_account.amount;
     let strategy_accounts = ExecuteStrategyCPI {
         strategy_executor: premium_vault.to_account_info(),
         premium_vault: premium_vault.to_account_info(),
         premium_vault_token_account: premium_vault_token_account.to_account_info(),
-        executor_program: executor_program.to_account_info(),
+        executor_account: executor_account.to_account_info(),
         usdc_mint: usdc_mint.to_account_info(),
         token_program: token_program.to_account_info(),
         associated_token_program: associated_token_program.to_account_info(),
@@ -108,11 +136,11 @@ pub fn handler(ctx: Context<ExecuteStrategy>) -> Result<()> {
         strategy_accounts,
         premium_vault_signer_seeds,
     );
-    strategy::cpi::execute_strategy(cpi_ctx)?;
+    strategy::cpi::execute_strategy(cpi_ctx, proposed_strategy.stream_amount)?;
     premium_vault_token_account.reload()?;
     let final_balance = premium_vault_token_account.amount;
     require!(
-        intital_balance - final_balance <= proposed_strategy.max_spending_power,
+        intital_balance - final_balance <= proposed_strategy.stream_amount,
         InsuranceEnumError::StrategyAllocationTooHigh
     );
 

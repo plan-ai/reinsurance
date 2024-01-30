@@ -10,7 +10,7 @@ declare_id!("6T2GGYWJZAdNUSJMQ3xgcCUHPkiKNWoCQeym3HDtMxrw");
 pub mod strategy {
     use super::*;
 
-    pub fn execute_strategy(_ctx: Context<ExecuteStrategyCPI>) -> Result<()> {
+    pub fn execute_strategy(_ctx: Context<ExecuteStrategyCPI>, _stream_amount: u64) -> Result<()> {
         Ok(())
     }
 }
@@ -28,8 +28,8 @@ pub struct ExecuteStrategyCPI<'info> {
     pub premium_vault_token_account: Account<'info, TokenAccount>,
     #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
-    ///CHECK: program on which strategy is executed
-    pub executor_program: AccountInfo<'info>,
+    ///CHECK: account on which strategy money is deposited
+    pub executor_account: AccountInfo<'info>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,

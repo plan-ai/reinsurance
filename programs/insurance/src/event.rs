@@ -68,7 +68,9 @@ pub struct LPTokenised {
 #[event]
 pub struct StrategyProposed {
     pub strategy: Pubkey,
-    pub max_spending_power: u64,
+    pub stream_amount: u64,
+    pub stream_every: u64,
+    pub number_of_streams: u64,
     pub premium_vault: Pubkey,
     pub strategy_id: String,
 }
@@ -121,5 +123,10 @@ pub struct ClaimRewardReleased {
 
 #[event]
 pub struct StrategyExecuted {
+    pub strategy: Pubkey,
+}
+
+#[event]
+pub struct StrategyBlocked {
     pub strategy: Pubkey,
 }

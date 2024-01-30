@@ -30,7 +30,9 @@ pub struct ProposeStrategy<'info> {
 pub fn handler(
     ctx: Context<ProposeStrategy>,
     strategy_id: String,
-    max_spending_power: u64,
+    stream_payment: u64,
+    stream_every: u64,
+    number_of_streams: u64,
 ) -> Result<()> {
     let strategy_program = &ctx.accounts.strategy_program;
     let premium_vault = &ctx.accounts.premium_vault;
@@ -38,16 +40,22 @@ pub fn handler(
 
     proposed_strategy.bump = ctx.bumps.proposed_strategy;
     proposed_strategy.strategy_program = strategy_program.key();
-    proposed_strategy.max_spending_power = max_spending_power;
+    proposed_strategy.stream_amount = stream_payment;
+    proposed_strategy.last_stream_payment = None;
+    proposed_strategy.stream_every = stream_every as i64;
+    proposed_strategy.number_of_streams = number_of_streams;
     proposed_strategy.strategy_id = strategy_id.clone();
     proposed_strategy.premium_vault = premium_vault.key();
     proposed_strategy.vote = 0;
     proposed_strategy.voting_start = None;
     proposed_strategy.strategy_accepted = false;
+    proposed_strategy.strategy_blocked = false;
 
     emit!(StrategyProposed {
         strategy: proposed_strategy.key(),
-        max_spending_power: max_spending_power,
+        stream_amount: stream_payment,
+        stream_every: stream_every,
+        number_of_streams: number_of_streams,
         premium_vault: premium_vault.key(),
         strategy_id: strategy_id
     });

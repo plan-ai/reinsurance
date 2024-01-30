@@ -1,6 +1,7 @@
 pub mod accept_reinsurance_proposal;
 pub mod accept_strategy;
 pub mod add_security;
+pub mod block_strategy;
 pub mod call_off_reinsurance;
 pub mod claim_decision;
 pub mod claim_voting_reward;
@@ -21,6 +22,7 @@ pub mod vote_strategy;
 pub use accept_reinsurance_proposal::*;
 pub use accept_strategy::*;
 pub use add_security::*;
+pub use block_strategy::*;
 pub use call_off_reinsurance::*;
 pub use claim_decision::*;
 pub use claim_voting_reward::*;

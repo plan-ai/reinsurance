@@ -65,4 +65,16 @@ pub enum InsuranceEnumError {
     // 6015
     #[msg("Strategy can not use fund higher than allocated")]
     StrategyAllocationTooHigh,
+
+    // 6016
+    #[msg("Stream date not yet reached")]
+    StreamMaturationNotYetReached,
+
+    // 6017
+    #[msg("All strategy streams already payed")]
+    StrategyStreamsEnded,
+
+    // 6018
+    #[msg("Strategy blocked due to security reasons")]
+    StrategyBlocked,
 }

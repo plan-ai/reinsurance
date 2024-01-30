@@ -67,13 +67,17 @@ pub struct PremiumVault {
 pub struct StrategyAccount {
     pub bump: u8,
     pub strategy_program: Pubkey,
-    pub max_spending_power: u64,
+    pub stream_amount: u64,
+    pub last_stream_payment: Option<i64>,
+    pub stream_every: i64,
+    pub number_of_streams: u64,
     #[max_len(50)]
     pub strategy_id: String,
     pub premium_vault: Pubkey,
     pub vote: u64,
     pub voting_start: Option<i64>,
     pub strategy_accepted: bool,
+    pub strategy_blocked: bool,
 }
 
 #[account]
