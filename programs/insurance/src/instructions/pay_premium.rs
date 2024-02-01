@@ -59,7 +59,7 @@ pub struct PayPremiun<'info> {
         constraint = proposal.proposal_accepted == true
     )]
     pub proposal: Account<'info, ReInsuranceProposal>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
@@ -69,6 +69,7 @@ pub struct PayPremiun<'info> {
 pub fn handler(ctx: Context<PayPremiun>, premium_multiplier: u64) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
     let premium_vault = &mut ctx.accounts.premium_vault;
+    let premium_vault_token_account = &mut ctx.accounts.premium_vault_token_account;
     let insurance = &mut ctx.accounts.insurance;
     let proposal = &ctx.accounts.proposal;
     let insurance_creator = &mut ctx.accounts.insurance_creator;
@@ -85,7 +86,7 @@ pub fn handler(ctx: Context<PayPremiun>, premium_multiplier: u64) -> Result<()> 
             token_program.to_account_info(),
             Transfer {
                 from: insurance_creator_token_account.to_account_info(),
-                to: premium_vault.to_account_info(),
+                to: premium_vault_token_account.to_account_info(),
                 authority: insurance_creator.to_account_info(),
             },
         ),

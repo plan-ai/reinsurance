@@ -9,6 +9,7 @@ use anchor_lang::prelude::*;
 pub struct AcceptReinsuranceProposal<'info> {
     pub insurance_creator: Signer<'info>,
     #[account(
+        mut,
         seeds = [
             insurance_creator.key().as_ref(),
             insurance.insurance_id.as_bytes()
@@ -38,8 +39,9 @@ pub struct AcceptReinsuranceProposal<'info> {
 
 pub fn handler(ctx: Context<AcceptReinsuranceProposal>) -> Result<()> {
     let proposal = &mut ctx.accounts.proposal;
-    let insurance = &ctx.accounts.insurance;
+    let insurance = &mut ctx.accounts.insurance;
     let lp = &mut ctx.accounts.lp;
+    let current_time = Clock::get()?.unix_timestamp;
 
     lp.total_securitized += insurance.coverage;
     if proposal.proposed_undercollaterization > lp.max_undercollaterization_promised {
@@ -49,7 +51,7 @@ pub fn handler(ctx: Context<AcceptReinsuranceProposal>) -> Result<()> {
         .push(proposal.proposed_undercollaterization);
 
     require!(
-        lp.total_securitized * 1000 == lp.max_undercollaterization_promised * lp.total_assets,
+        lp.total_assets * 1000 >= lp.max_undercollaterization_promised * lp.total_securitized,
         InsuranceEnumError::CanNotFullFillUnderCollateralizationDemands
     );
     require!(
@@ -57,6 +59,8 @@ pub fn handler(ctx: Context<AcceptReinsuranceProposal>) -> Result<()> {
         InsuranceEnumError::InsuranceReinsuredAlready
     );
     proposal.proposal_accepted = true;
+    insurance.reinsured = true;
+    insurance.premium_due = Some(current_time);
 
     emit!(ReInsuranceProposalAccepted {
         reinsurance: proposal.key()

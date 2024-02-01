@@ -1,5 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { Insurance } from "../target/types/insurance";
+import { TOKEN_METADATA_PROGRAM_ID } from "./constant";
 
 // Configure the client to use the local cluster.
 anchor.setProvider(anchor.AnchorProvider.env());
@@ -34,10 +35,10 @@ async function get_metadata_account(mintKeypair) {
   return anchor.web3.PublicKey.findProgramAddressSync(
     [
       Buffer.from("metadata"),
-      constant.TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
       mintKeypair.toBuffer(),
     ],
-    constant.TOKEN_METADATA_PROGRAM_ID
+    TOKEN_METADATA_PROGRAM_ID
   )[0];
 }
 

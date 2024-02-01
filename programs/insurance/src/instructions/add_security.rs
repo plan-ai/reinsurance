@@ -33,7 +33,7 @@ pub struct AddSecurity<'info> {
         associated_token::authority = lp
     )]
     pub lp_usdc_account: Account<'info, TokenAccount>,
-    #[account(address=USDC)]
+    // #[account(address=USDC)]
     pub usdc_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
