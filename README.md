@@ -6,7 +6,7 @@ This repository constitutes the smart contracts for tokenized reinsurance of exi
 
 To set up the repository, follow the following steps:
 
- 1. **Git clone the repository:**  Git clone the repository by running the command ```
+ 1. **Git clone the repository:**  Git clone the repository by running the command
 ```console
 git clone https://github.com/codebase-reinsurance/reinsurance-contracts.git
 ```
